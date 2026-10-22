@@ -30,8 +30,7 @@ double gold_section(double ak, double bk, double eps, double delta){
     return (ak + bk) / 2.0;
 }
 
-
-double Fibonachi(double eps, double a, double b){
+double Fibonachi(double eps, double a, double b, double alpha = 1e-6) {
     if (b - a <= eps) {
         return (a + b) / 2.0;
     }
@@ -42,21 +41,45 @@ double Fibonachi(double eps, double a, double b){
     }
 
     const int n = static_cast<int>(F.size()) - 1;
-    for (int k = n; k >= 4; --k) {
-        double xk = a + F[k - 2] / F[k] * (b - a);
-        double yk = a + F[k - 1] / F[k] * (b - a);
+    
+
+    double xk = a + F[n - 2] / F[n] * (b - a);
+    double yk = a + F[n - 1] / F[n] * (b - a);
+    
+    for (int k = n; k >= 3; --k) {
         double fx = f(xk);
         double fy = f(yk);
-
+        
         if (fx > fy) {
             a = xk;
+            xk = yk;
+            yk = a + F[k - 2] / F[k - 1] * (b - a);
         } else {
             b = yk;
+            yk = xk;
+            xk = a + F[k - 3] / F[k - 1] * (b - a);
         }
     }
-
+    
+    double xn = xk;
+    double yn = yk;
+    
+    if (abs(xn - yn) < alpha) {
+        yn = xn + alpha;
+    }
+    
+    double fxn = f(xn);
+    double fyn = f(yn);
+    
+    if (fxn > fyn) {
+        a = xn;
+    } else {
+        b = yn;
+    }
+    
     return (a + b) / 2.0;
 }
+
 
 int main(){
     const double eps = 0.01;
