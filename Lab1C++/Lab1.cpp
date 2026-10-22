@@ -50,8 +50,8 @@ double halfmetod(double a, double b, double eps) {
 int main() {
   double a = -4.0;
   double b = 3.0;
-  double eps = 0.01;
-  double delta = 0.001;
+  double eps = 0.001;
+  double delta = 0.0001;
   double first_metod = dichotomy(a, b, eps, delta);
   double second_metod = halfmetod(a, b, eps);
   cout << "Метод дихотомии: " << first_metod << endl;
