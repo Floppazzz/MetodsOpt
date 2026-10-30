@@ -1,5 +1,4 @@
 #include <cmath>
-#include <algorithm>
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -30,60 +29,53 @@ double gold_section(double ak, double bk, double eps, double delta){
     return (ak + bk) / 2.0;
 }
 
-double Fibonachi(double eps, double a, double b, double alpha = 1e-6) {
-    if (b - a <= eps) {
-        return (a + b) / 2.0;
-    }
-
-    vector<double> F = {0.0, 1.0};
-    while (F.back() < 2.0 * (b - a) / eps) {
-        F.push_back(F[F.size() - 1] + F[F.size() - 2]);
-    }
-
-    const int n = static_cast<int>(F.size()) - 1;
+double Fibonachi(double eps, double ak, double bk, double alpha = 1e-6) {
+	vector<double> F = {0, 1};
+    int k = 1;
     
-
-    double xk = a + F[n - 2] / F[n] * (b - a);
-    double yk = a + F[n - 1] / F[n] * (b - a);
+    while ((bk - ak) / F[k] > eps) {
+        F.push_back(F[k] + F[k - 1]);
+        k++;
+    }
+    int n = k;
     
-    for (int k = n; k >= 3; --k) {
-        double fx = f(xk);
-        double fy = f(yk);
-        
+    double xk = ak + (F[n - 2] / F[n]) * (bk - ak);
+    double yk = ak + (F[n - 1] / F[n]) * (bk - ak);
+    double fx = f(xk);
+    double fy = f(yk);
+
+    for (int i = 1; i < n - 1; i++) {
         if (fx > fy) {
-            a = xk;
-            xk = yk;
-            yk = a + F[k - 2] / F[k - 1] * (b - a);
+            ak = xk;  
+            xk = yk;  
+            fx = fy;
+            yk = ak + (F[n - i - 1] / F[n - i]) * (bk - ak);
+            fy = f(yk);
         } else {
-            b = yk;
-            yk = xk;
-            xk = a + F[k - 3] / F[k - 1] * (b - a);
+            bk = yk;  
+            yk = xk;  
+            fy = fx;
+            xk = ak + (F[n - i - 2] / F[n - i]) * (bk - ak);
+            fx = f(xk);
         }
     }
-    
+
     double xn = xk;
-    double yn = yk;
+    double yn = yk + alpha;
     
-    if (abs(xn - yn) < alpha) {
-        yn = xn + alpha;
-    }
-    
-    double fxn = f(xn);
-    double fyn = f(yn);
-    
-    if (fxn > fyn) {
-        a = xn;
+    if (f(xn) > f(yn)) {
+        ak = xn;
     } else {
-        b = yn;
+        bk = yn;
     }
-    
-    return (a + b) / 2.0;
+
+    return (ak + bk) / 2.0;
 }
 
 
 int main(){
-    const double eps = 0.01;
-    const double delta = (sqrt(5.0) - 1.0) / 2.0;
+    double eps = 0.01;
+    double delta = (sqrt(5.0) - 1.0) / 2.0;
     double ak;
     double bk;
 
